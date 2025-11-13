@@ -59,6 +59,3 @@ mvn spring-boot:run
 | GET | /api/employees/department/{department} | Employees by department |
 | GET | /api/employees/department/{department}/salary/{salary} | Department and salary filter |
 
-## Developer
-Hitarth Hindocha
-```
