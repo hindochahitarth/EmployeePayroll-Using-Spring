@@ -3,63 +3,109 @@ package org.miniproject.employeepayroll.controller;
 import org.miniproject.employeepayroll.entity.Employee;
 import org.miniproject.employeepayroll.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/employees")
+@Controller
+@RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
-    }
+    // ===========================
+    // Basic CRUD
+    // ===========================
+
     @GetMapping
-    public List<Employee> getAllEmployees()
-    {
-        return employeeService.getAllEmployees();
+    public String viewEmployees(Model model) {
+        model.addAttribute("employees", employeeService.getAllEmployees());
+        return "index"; // index.html
     }
-    @GetMapping("/{id}")
-    public Employee getEmployee(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id);
+
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("employee", new Employee());
+        return "add"; // add.html
     }
-    @PutMapping("/{id}")
-    public Employee updateEmployee(@RequestBody Employee employee, @PathVariable Long id) {
-        return employeeService.updateEmployee(id, employee);
+
+    @PostMapping("/add")
+    public String addEmployee(@ModelAttribute Employee employee) {
+        employeeService.createEmployee(employee);
+        return "redirect:/employees";
     }
-    @DeleteMapping("/{id}")
-    public void deleteEmployee(@PathVariable Long id) {
-         employeeService.deleteEmployee(id);
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Employee emp = employeeService.getEmployeeById(id);
+        model.addAttribute("employee", emp);
+        return "update"; // update.html
     }
+
+    @PostMapping("/edit/{id}")
+    public String updateEmployee(@PathVariable Long id, @ModelAttribute Employee employee) {
+        employeeService.updateEmployee(id, employee);
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return "redirect:/employees";
+    }
+
+    // ===========================
+    // Queries by salary
+    // ===========================
+
+
+
     @GetMapping("/salary/{salary}")
-    public List<Employee> getEmployeesBySalary(@PathVariable Double salary){
-        return employeeService.getEmployeesBySalary(salary);
+    public String getEmployeesBySalary(@PathVariable Double salary, Model model) {
+        model.addAttribute("employees", employeeService.getEmployeesBySalary(salary));
+        return "index";
     }
+
+
     @GetMapping("/salary/greater/{salary}")
-    public  List<Employee> getEmployeesBySalaryGreaterThan(@PathVariable Double salary){
-        return employeeService.getEmployeesBySalaryGreaterThan(salary);
+    public String getEmployeesBySalaryGreaterThan(@PathVariable Double salary, Model model){
+        List<Employee> employees = employeeService.getEmployeesBySalaryGreaterThan(salary);
+        model.addAttribute("employees", employees);
+        return "index";
     }
-    @GetMapping("/salary/less/{salar}")
-    public List<Employee> getEmployeesBySalaryLessThan(@PathVariable Double salar){
-        return employeeService.getEmployeesBySalaryLessThan(salar);
+
+    @GetMapping("/salary/less/{salary}")
+    public String getEmployeesBySalaryLessThan(@PathVariable Double salary, Model model){
+        List<Employee> employees = employeeService.getEmployeesBySalaryLessThan(salary);
+        model.addAttribute("employees", employees);
+        return "index";
     }
+
     @GetMapping("/salary/between/{min}/{max}")
-    public List<Employee> getEmployeesBySalaryBetween(@PathVariable Double min, @PathVariable Double max){
-        return employeeService.findBySalaryBetween(min, max);
+    public String getEmployeesBySalaryBetween(@PathVariable Double min, @PathVariable Double max, Model model){
+        List<Employee> employees = employeeService.findBySalaryBetween(min, max);
+        model.addAttribute("employees", employees);
+        return "index";
     }
+
+    // ===========================
+    // Queries by department
+    // ===========================
+
     @GetMapping("/department/{department}")
-    public List<Employee> getEmployeesByDepartment(@PathVariable String department){
-        return employeeService.getAllEmployeesByDepartment(department);
-
+    public String getEmployeesByDepartment(@PathVariable String department, Model model){
+        List<Employee> employees = employeeService.getAllEmployeesByDepartment(department);
+        model.addAttribute("employees", employees);
+        return "index";
     }
+
     @GetMapping("/department/{department}/salary/{salary}")
-    public List<Employee> getEmployeesDepartmentAndSalary(@PathVariable String department,@PathVariable Double salary)
-    {
-        return employeeService.getAllEmployeesByDepartmentAndSalary(department, salary);
+    public String getEmployeesDepartmentAndSalary(@PathVariable String department,@PathVariable Double salary, Model model){
+        List<Employee> employees = employeeService.getAllEmployeesByDepartmentAndSalary(department, salary);
+        model.addAttribute("employees", employees);
+        return "index";
     }
-
 }
