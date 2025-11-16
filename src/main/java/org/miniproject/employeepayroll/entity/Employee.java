@@ -1,7 +1,7 @@
 package org.miniproject.employeepayroll.entity;
 
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name="employees")
@@ -11,9 +11,18 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+
+    @Email(message = "Email must be valid")
+    @NotBlank(message = "Email cannot be empty")
     private String email;
+
+    @NotBlank(message = "Department cannot be empty")
     private String department;
+
+    @NotNull(message = "Salary is required")
+    @Min(value = 1, message = "Salary must be greater than 0")
     private Double salary;
 
     public Employee(){}
@@ -24,7 +33,6 @@ public class Employee {
         this.department = department;
         this.salary = salary;
     }
-
 
     public long getId() {
         return id;
